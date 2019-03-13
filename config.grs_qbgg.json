@@ -1,0 +1,9 @@
+{
+  "tag": "研究生院 - 全部公告",
+  "monitor_url": "http://10.202.73.10/redir.php?catalog_id=16313",
+  "monitor_links": ".art-heading1 > a",
+  "title": "",
+  "filter": "#contentcn",
+  "email": "zju-grs-qbgg@googlegroups.com",
+  "delay": 300
+}

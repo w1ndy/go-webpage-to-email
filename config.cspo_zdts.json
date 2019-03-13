@@ -1,0 +1,9 @@
+{
+  "tag": "即时更新",
+  "monitor_url": "http://10.202.70.61/redir.php?catalog_id=712604",
+  "monitor_links": "div.nr_both a",
+  "title": "p",
+  "filter": "div.nr_both",
+  "email": "zju-cspo-zdts@googlegroups.com",
+  "delay": 300
+}
