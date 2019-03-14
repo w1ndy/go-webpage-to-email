@@ -1,0 +1,26 @@
+kind: Deployment
+apiVersion: apps/v1beta2
+metadata:
+  labels:
+    app: announcer
+  name: announcer
+  namespace: kube-public
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: announcer
+  template:
+    metadata:
+      labels:
+        app: announcer
+    spec:
+      containers:
+      - name: announcer-cspo-zdts
+        image: quay.io/w1ndy/go-webpage-to-email
+        imagePullPolicy: Always
+        args: ["-conf", "config.cspo_zdts.json"]
+      - name: announcer-grs-qbgg
+        image: quay.io/w1ndy/go-webpage-to-email
+        imagePullPolicy: Always
+        args: ["-conf", "config.grs_qbgg.json"]
