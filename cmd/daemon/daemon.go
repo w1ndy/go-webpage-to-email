@@ -24,6 +24,7 @@ type ScrapeConfig struct {
 	Filter       string `json:"filter"`
 	Email        string `json:"email"`
 	Delay        int    `json:"delay"`
+	SMTPServer   string `json:"smtp_server"`
 }
 
 // CachedLink is a watched link on the page
@@ -106,10 +107,10 @@ func check(conf *ScrapeConfig, prev []*CachedLink) ([]*CachedLink, []*CachedLink
 	return curr, news
 }
 
-func sendPage(email, title, url, filter string) {
-	res, err := get(url)
+func sendPage(link *CachedLink, conf *ScrapeConfig) {
+	res, err := get(link.URL)
 	if err != nil {
-		log.Printf("ERROR cannot read %s: %s", url, err)
+		log.Printf("ERROR cannot read %s: %s", link.URL, err)
 		return
 	}
 	defer res.Body.Close()
@@ -122,12 +123,12 @@ func sendPage(email, title, url, filter string) {
 			return
 		}
 
-		results := doc.Find(filter)
+		results := doc.Find(conf.Filter)
 		if results.Length() == 0 {
 			log.Printf("ERROR no content retrieved")
-			content = fmt.Sprintf("<a href=\"%s\">%s</a>", url, url)
+			content = fmt.Sprintf("<a href=\"%s\">%s</a>", link.URL, link.URL)
 		} else {
-			parts := []string{url}
+			parts := []string{link.URL}
 			results.Each(func(i int, s *goquery.Selection) {
 				html, err := s.Html()
 				if err != nil {
@@ -140,15 +141,15 @@ func sendPage(email, title, url, filter string) {
 		}
 	} else if res.StatusCode == 302 {
 		log.Printf("INFO link is a redirect")
-		content = fmt.Sprintf("<a href=\"%s\">%s</a>", url, url)
+		content = fmt.Sprintf("<a href=\"%s\">%s</a>", link.URL, link.URL)
 	} else {
-		log.Printf("ERROR cannot read %s: server responded %d", url, res.StatusCode)
+		log.Printf("ERROR cannot read %s: server responded %d", link.URL, res.StatusCode)
 		return
 	}
 
 	msg := fmt.Sprintf("Subject %s\nTo: %s\nMIME-version: 1.0;\nContent-Type: text/html;\n\n%s",
-		title, email, content)
-	err = smtp.SendMail("127.0.0.1:25", nil, "root@localhost", []string{email}, []byte(msg))
+		link.Title, conf.Email, content)
+	err = smtp.SendMail(conf.SMTPServer, nil, "go_web_page_to_email", []string{conf.Email}, []byte(msg))
 	if err != nil {
 		log.Printf("ERROR send mail failed: %s", err)
 	}
@@ -198,7 +199,11 @@ func main() {
 					if err != nil {
 						log.Printf("ERROR URL expected for \"%s\": %s", n, err)
 					} else {
-						sendPage(conf.Email, conf.Tag+" | "+n.Title, base.ResolveReference(u).String(), conf.Filter)
+						link := CachedLink{
+							Title: conf.Tag + " | " + n.Title,
+							URL:   base.ResolveReference(u).String(),
+						}
+						sendPage(&link, &conf)
 					}
 				}
 			}
