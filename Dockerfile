@@ -9,4 +9,4 @@ WORKDIR /app
 COPY --from=build /src/daemon /app/
 COPY config.*.json /app/
 USER nobody
-ENTRYPOINT /app/daemon
+ENTRYPOINT ["/app/daemon"]
