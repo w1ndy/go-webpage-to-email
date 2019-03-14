@@ -7,6 +7,6 @@ FROM alpine:latest
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY --from=build /src/daemon /app/
-COPY config.*.json /app/
+COPY examples /app/
 USER nobody
 ENTRYPOINT ["/app/daemon"]
