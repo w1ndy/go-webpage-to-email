@@ -147,7 +147,7 @@ func sendPage(link *CachedLink, conf *ScrapeConfig) {
 		return
 	}
 
-	msg := fmt.Sprintf("Subject %s\nTo: %s\nMIME-version: 1.0;\nContent-Type: text/html;\n\n%s",
+	msg := fmt.Sprintf("Subject: %s\nTo: %s\nMIME-version: 1.0;\nContent-Type: text/html;\n\n%s",
 		link.Title, conf.Email, content)
 	err = smtp.SendMail(conf.SMTPServer, nil, "go_web_page_to_email", []string{conf.Email}, []byte(msg))
 	if err != nil {
