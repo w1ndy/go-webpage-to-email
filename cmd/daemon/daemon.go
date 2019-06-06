@@ -148,7 +148,7 @@ func sendPage(link *CachedLink, conf *ScrapeConfig) {
 		content = strings.Join(partials, "<hr>")
 	}
 
-	msg := fmt.Sprintf("Subject: %s\nTo: %s\nMIME-version: 1.0;\nContent-Type: text/html; charset=utf-8\n\n%s<hr>%s",
+	msg := fmt.Sprintf("From: gw2e\nSubject: %s\nTo: %s\nMIME-version: 1.0;\nContent-Type: text/html; charset=utf-8\n\n%s<hr>%s",
 		link.Title, conf.Email, link.URL, content)
 	err = smtp.SendMail(conf.SMTPServer, nil, "go_web_page_to_email", []string{conf.Email}, []byte(msg))
 	if err != nil {
